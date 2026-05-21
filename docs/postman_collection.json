@@ -1,0 +1,110 @@
+{
+  "info": {
+    "name": "Employee Project & Expense Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api/v1" },
+    { "key": "access_token", "value": "" },
+    { "key": "refresh_token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username_or_email\":\"admin@example.com\",\"password\":\"Password123!\"}"
+        }
+      }
+    },
+    {
+      "name": "Forgot Password",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/auth/forgot-password",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\":\"admin@example.com\"}"
+        }
+      }
+    },
+    {
+      "name": "Reset Password",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{base_url}}/auth/reset-password",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"token\":\"paste-reset-token-here\",\"new_password\":\"NewPassword123!\"}"
+        }
+      }
+    },
+    {
+      "name": "List Roles",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": "{{base_url}}/roles"
+      }
+    },
+    {
+      "name": "Create Project",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "url": "{{base_url}}/projects",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"ERP rollout\",\"description\":\"Internal ERP implementation\",\"status\":\"active\",\"manager_id\":2}"
+        }
+      }
+    },
+    {
+      "name": "Assign Task",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "url": "{{base_url}}/tasks",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Collect invoices\",\"project_id\":1,\"assigned_to_id\":3,\"priority\":\"high\"}"
+        }
+      }
+    },
+    {
+      "name": "Add Expense",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{access_token}}" }
+        ],
+        "url": "{{base_url}}/expenses",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Taxi fare\",\"amount\":\"420.00\",\"category\":\"Travel\",\"expense_date\":\"2026-05-20\",\"project_id\":1}"
+        }
+      }
+    },
+    {
+      "name": "Dashboard Summary",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{access_token}}" }],
+        "url": "{{base_url}}/dashboard/summary"
+      }
+    }
+  ]
+}
