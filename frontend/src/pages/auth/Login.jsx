@@ -10,6 +10,7 @@ export default function Login() {
   const [form, setForm] = useState({ username_or_email: "", password: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -56,14 +57,22 @@ export default function Login() {
               <div className="relative">
                 <Lock className="absolute left-3 top-2.5 text-slate-400" size={17} />
                 <input
-                  className="field pl-9"
-                  type="password"
+                  className="field pl-9 pr-10"
+                  type={showPassword ? "text" : "password"}
                   value={form.password}
                   onChange={(event) => setForm({ ...form, password: event.target.value })}
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
               </div>
             </label>
+
             <div className="flex items-center justify-between text-sm">
               <Link className="font-semibold text-teal-700 hover:text-teal-800" to="/forgot-password">
                 Forgot password
