@@ -67,7 +67,13 @@ export default function ResourcePage({
     event.preventDefault();
     setError("");
     const payload = Object.fromEntries(
-      Object.entries(form).filter(([, value]) => value !== "" && value !== null && value !== undefined),
+      Object.entries(form).map(([key, value]) => {
+        // Convert empty strings to null for optional fields
+        if (value === "" || (typeof value === "number" && isNaN(value))) {
+          return [key, null];
+        }
+        return [key, value];
+      }).filter(([, value]) => value !== null && value !== undefined),
     );
     try {
       if (modal.mode === "create") {
@@ -147,7 +153,15 @@ function Input({ field, value, onChange }) {
       className="field"
       type={field.type || "text"}
       value={value}
-      onChange={(event) => onChange(field.number ? Number(event.target.value) : event.target.value)}
+      onChange={(event) => {
+        const inputValue = event.target.value;
+        if (field.number) {
+          // For number fields, keep empty string for optional fields
+          onChange(inputValue === "" ? "" : Number(inputValue));
+        } else {
+          onChange(inputValue);
+        }
+      }}
       min={field.min}
       step={field.step}
       required={field.required}

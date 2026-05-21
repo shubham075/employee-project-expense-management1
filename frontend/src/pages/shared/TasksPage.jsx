@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 
 import { api } from "../../api/client";
@@ -7,6 +8,32 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import { date } from "../../utils/format";
 
 export default function TasksPage({ role = "Admin", employee = false }) {
+  const [userOptions, setUserOptions] = useState([]);
+  const [projectOptions, setProjectOptions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchOptions() {
+      try {
+        const [usersResult, projectsResult] = await Promise.all([
+          api.users.list("?size=100"),
+          api.projects.list("?size=100"),
+        ]);
+        const users = usersResult?.items || [];
+        const projects = projectsResult?.items || [];
+        setUserOptions(users.map((u) => ({ value: u.id, label: u.full_name })));
+        setProjectOptions(projects.map((p) => ({ value: p.id, label: p.name })));
+      } catch (err) {
+        console.error("Failed to fetch task options:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOptions();
+  }, []);
+
+  if (loading) return <div className="py-8 text-sm text-slate-500">Loading...</div>;
+
   return (
     <ResourcePage
       title="Tasks"
@@ -29,8 +56,8 @@ export default function TasksPage({ role = "Admin", employee = false }) {
         { name: "title", label: "Title", required: true },
         { name: "status", label: "Status", type: "select", options: taskStatuses },
         { name: "priority", label: "Priority", type: "select", options: priorities },
-        { name: "project_id", label: "Project ID", type: "number", number: true, required: true },
-        { name: "assigned_to_id", label: "Assigned to ID", type: "number", number: true, required: true },
+        { name: "project_id", label: "Project", type: "select", options: projectOptions, required: true },
+        { name: "assigned_to_id", label: "Assigned to", type: "select", options: userOptions, required: true },
         { name: "due_date", label: "Due date", type: "date" },
         { name: "description", label: "Description", type: "textarea" },
       ]}
@@ -66,4 +93,3 @@ const priorities = [
   { value: "medium", label: "Medium" },
   { value: "high", label: "High" },
 ];
-

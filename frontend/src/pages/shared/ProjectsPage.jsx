@@ -1,9 +1,36 @@
+import { useEffect, useState } from "react";
 import { api } from "../../api/client";
 import ResourcePage from "../../components/ResourcePage";
 import StatusBadge from "../../components/ui/StatusBadge";
 import { date } from "../../utils/format";
 
 export default function ProjectsPage({ role = "Admin", canDelete = false }) {
+  const [managerOptions, setManagerOptions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchManagers() {
+      try {
+        const result = await api.users.list("?size=100");
+        const managers = result?.items || [];
+        setManagerOptions([
+          { value: "", label: "None" },
+          ...managers.map((user) => ({
+            value: user.id,
+            label: user.full_name,
+          })),
+        ]);
+      } catch (error) {
+        console.error("Failed to fetch managers:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchManagers();
+  }, []);
+
+  if (loading) return <div className="py-8 text-sm text-slate-500">Loading...</div>;
+
   return (
     <ResourcePage
       title="Projects"
@@ -22,7 +49,7 @@ export default function ProjectsPage({ role = "Admin", canDelete = false }) {
       fields={[
         { name: "name", label: "Name", required: true },
         { name: "status", label: "Status", type: "select", options: statusOptions },
-        { name: "manager_id", label: "Manager ID", type: "number", number: true, required: true },
+        { name: "manager_id", label: "Manager", type: "select", options: managerOptions },
         { name: "start_date", label: "Start date", type: "date" },
         { name: "end_date", label: "End date", type: "date" },
         { name: "description", label: "Description", type: "textarea" },
