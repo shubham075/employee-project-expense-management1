@@ -14,7 +14,7 @@ class UserRepository(BaseRepository[User]):
     def get_by_username_or_email(self, value: str) -> User | None:
         result = self.db.execute(
             select(User).where(
-                User.is_deleted.is_(False),
+                User.is_deleted == False,
                 or_(User.email == value, User.username == value),
             )
         )

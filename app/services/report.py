@@ -15,22 +15,22 @@ class ReportService:
         self.db = db
 
     def dashboard_summary(self) -> DashboardSummary:
-        total_users = self.db.scalar(select(func.count()).select_from(User).where(User.is_deleted.is_(False)))
+        total_users = self.db.scalar(select(func.count()).select_from(User).where(User.is_deleted == False))
         total_projects = self.db.scalar(
-            select(func.count()).select_from(Project).where(Project.is_deleted.is_(False))
+            select(func.count()).select_from(Project).where(Project.is_deleted == False)
         )
         open_tasks = self.db.scalar(
-            select(func.count()).select_from(Task).where(Task.is_deleted.is_(False), Task.status != "done")
+            select(func.count()).select_from(Task).where(Task.is_deleted == False, Task.status != "done")
         )
         pending_expenses = self.db.scalar(
             select(func.count()).select_from(Expense).where(
-                Expense.is_deleted.is_(False),
+                Expense.is_deleted == False,
                 Expense.status == "pending",
             )
         )
         approved_total = self.db.scalar(
             select(func.coalesce(func.sum(Expense.amount), 0)).where(
-                Expense.is_deleted.is_(False),
+                Expense.is_deleted == False,
                 Expense.status == "approved",
             )
         )
@@ -45,7 +45,7 @@ class ReportService:
     def expense_report(self) -> list[ExpenseReportRow]:
         result = self.db.execute(
             select(Expense.status, func.count(Expense.id), func.coalesce(func.sum(Expense.amount), 0))
-            .where(Expense.is_deleted.is_(False))
+            .where(Expense.is_deleted == False)
             .group_by(Expense.status)
         )
         return [
@@ -63,7 +63,7 @@ class ReportService:
             )
             .outerjoin(Task, Task.project_id == Project.id)
             .outerjoin(Expense, Expense.project_id == Project.id)
-            .where(Project.is_deleted.is_(False))
+            .where(Project.is_deleted == False)
             .group_by(Project.id, Project.name)
         )
         return [

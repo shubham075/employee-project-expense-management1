@@ -91,3 +91,12 @@ VALUES
 cd frontend
 npm.cmd install
 npm.cmd run dev
+
+{
+  "email": "test@admin.com",
+  "username": "admin",
+  "full_name": "admin",
+  "password": "123456789",
+  "role_id": 1,
+  "manager_id": null
+}

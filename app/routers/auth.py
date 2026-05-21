@@ -24,8 +24,14 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/register", response_model=APIResponse[UserRead], status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)):
-    user = AuthService(db).register(payload)
-    return success_response(UserRead.model_validate(user), "User registered")
+    try:
+        user = AuthService(db).register(payload)
+        return success_response(UserRead.model_validate(user), "User registered")
+    except Exception as exc:
+        from app.core.logging import logger
+        logger.error("Registration failed: %s", exc, exc_info=True)
+        raise
+
 
 
 @router.post("/login", response_model=APIResponse[TokenPair])

@@ -18,7 +18,7 @@ class BaseRepository(Generic[ModelType]):
     def get_by_id(self, entity_id: int) -> ModelType | None:
         statement = select(self.model).where(self.model.id == entity_id)
         if hasattr(self.model, "is_deleted"):
-            statement = statement.where(self.model.is_deleted.is_(False))
+            statement = statement.where(self.model.is_deleted == False)
         result = self.db.execute(statement)
         return result.scalars().first()
 
@@ -57,7 +57,7 @@ class BaseRepository(Generic[ModelType]):
 
     def _apply_filters(self, statement: Select, params: ListParams) -> Select:
         if hasattr(self.model, "is_deleted"):
-            statement = statement.where(self.model.is_deleted.is_(False))
+            statement = statement.where(self.model.is_deleted == False)
 
         if params.search and self.searchable_fields:
             search_clauses = [

@@ -26,6 +26,7 @@ class UserService:
 
     def create_user(self, payload: UserCreate) -> User:
         data = payload.model_dump(exclude={"password"})
+        print('hased password.......',hash_password(payload.password))
         data["hashed_password"] = hash_password(payload.password)
         user = self.repo.create(data)
         self.db.commit()

@@ -16,6 +16,7 @@ from app.models.password_reset import PasswordResetToken
 from app.models.session import UserSession
 from app.models.user import User
 from app.repositories.password_reset import PasswordResetRepository
+from app.repositories.role import RoleRepository
 from app.repositories.session import SessionRepository
 from app.repositories.user import UserRepository
 from app.schemas.auth import ForgotPasswordResponse, LoginRequest, RegisterRequest, TokenPair
@@ -28,11 +29,25 @@ class AuthService:
         self.users = UserRepository(db)
         self.sessions = SessionRepository(db)
         self.password_resets = PasswordResetRepository(db)
+        self.roles = RoleRepository(db)
 
     def register(self, payload: RegisterRequest) -> User:
         existing = self.users.get_by_username_or_email(payload.email)
-        if existing or self.users.get_by_username_or_email(payload.username):
-            raise AppException("User already exists", status_code=409)
+        if existing:
+            raise AppException("Email already exists", status_code=409)
+        
+        if self.users.get_by_username_or_email(payload.username):
+            raise AppException("Username already exists", status_code=409)
+        
+        role = self.roles.get_by_id(payload.role_id)
+        if not role:
+            raise AppException(f"Role with id {payload.role_id} does not exist", status_code=400)
+        
+        if payload.manager_id:
+            manager = self.users.get_by_id(payload.manager_id)
+            if not manager:
+                raise AppException(f"Manager with id {payload.manager_id} does not exist", status_code=400)
+        
         user = self.users.create(
             {
                 "email": payload.email,
