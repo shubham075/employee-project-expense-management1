@@ -76,7 +76,7 @@ export default function AppShell() {
                 <p className="text-xs text-slate-500">{user?.email}</p>
               </div>
             </button>
-            <Button variant="secondary" className="h-10 w-10 p-0" onClick={handleLogout} title="Logout">
+            <Button variant="danger" className="h-10 w-10 p-0" onClick={handleLogout} title="Logout">
               <LogOut size={17} />
             </Button>
           </div>

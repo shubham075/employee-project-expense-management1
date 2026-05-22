@@ -22,7 +22,7 @@ export default function TasksPage({ role = "Admin", employee = false }) {
         const users = usersResult?.items || [];
         const projects = projectsResult?.items || [];
         setUserOptions(users.map((u) => ({ value: u.id, label: u.full_name })));
-        setProjectOptions(projects.map((p) => ({ value: p.id, label: p.name })));
+        setProjectOptions(projects.map((p) => ({ value: p.id, label: `${p.name} (#${p.id})` })));
       } catch (err) {
         console.error("Failed to fetch task options:", err);
       } finally {
@@ -48,18 +48,26 @@ export default function TasksPage({ role = "Admin", employee = false }) {
         { key: "title", label: "Task" },
         { key: "status", label: "Status", render: (row) => <StatusBadge value={row.status} /> },
         { key: "priority", label: "Priority" },
-        { key: "project_id", label: "Project" },
-        { key: "assigned_to_id", label: "Assignee" },
+        {
+          key: "project_id",
+          label: "Project",
+          render: (row) => projectOptions.find((option) => String(option.value) === String(row.project_id))?.label || row.project_id || "-",
+        },
+        {
+          key: "assigned_to_id",
+          label: "Assignee",
+          render: (row) => userOptions.find((option) => String(option.value) === String(row.assigned_to_id))?.label || row.assigned_to_id || "-",
+        },
         { key: "due_date", label: "Due", render: (row) => date(row.due_date) },
       ]}
       fields={[
-        { name: "title", label: "Title", required: true },
-        { name: "status", label: "Status", type: "select", options: taskStatuses },
+        { name: "title", label: "Title", required: true, validators: ["alphaSpace"] },
+        { name: "status", label: "Status", type: "select", options: taskStatuses, required: true },
         { name: "priority", label: "Priority", type: "select", options: priorities },
         { name: "project_id", label: "Project", type: "select", options: projectOptions, required: true },
         { name: "assigned_to_id", label: "Assigned to", type: "select", options: userOptions, required: true },
-        { name: "due_date", label: "Due date", type: "date" },
-        { name: "description", label: "Description", type: "textarea" },
+        { name: "due_date", label: "Due date", type: "date", required: true, validators: ["minDateToday", "maxDateOneYear"] },
+        { name: "description", label: "Description", type: "textarea", required: true, minLength: 100, validators: [{ name: "minLength", minLength: 100 }] },
       ]}
       rowActions={(reload) => ({
         key: "quick",
@@ -83,7 +91,7 @@ export default function TasksPage({ role = "Admin", employee = false }) {
 }
 
 const taskStatuses = [
-  { value: "todo", label: "Todo" },
+  { value: "todo", label: "toDO" },
   { value: "in-progress", label: "In progress" },
   { value: "done", label: "Done" },
 ];

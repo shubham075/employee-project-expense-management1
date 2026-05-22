@@ -2,10 +2,11 @@ export function FormGrid({ children }) {
   return <div className="grid gap-4 sm:grid-cols-2">{children}</div>;
 }
 
-export function Field({ label, children }) {
+export function Field({ label, error, children }) {
   return (
     <label className="block">
       <span className="label mb-1 block">{label}</span>
+      {error ? <span className="mb-1 block text-sm font-medium text-red-600">{error}</span> : null}
       {children}
     </label>
   );

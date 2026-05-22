@@ -38,29 +38,33 @@ export default function ProjectsPage({ role = "Admin", canDelete = false }) {
       api={api.projects}
       createLabel="Create project"
       canDelete={canDelete}
-      initialForm={{ name: "", description: "", status: "active", start_date: "", end_date: "", manager_id: "" }}
+      initialForm={{ name: "", description: "", status: "on-hold", start_date: "", end_date: "", manager_id: "" }}
       columns={[
         { key: "name", label: "Project" },
         { key: "status", label: "Status", render: (row) => <StatusBadge value={row.status} /> },
-        { key: "manager_id", label: "Manager" },
+        {
+          key: "manager_id",
+          label: "Manager",
+          render: (row) => managerOptions.find((option) => String(option.value) === String(row.manager_id))?.label || "None",
+        },
         { key: "start_date", label: "Start", render: (row) => date(row.start_date) },
         { key: "end_date", label: "End", render: (row) => date(row.end_date) },
       ]}
       fields={[
         { name: "name", label: "Name", required: true },
-        { name: "status", label: "Status", type: "select", options: statusOptions },
-        { name: "manager_id", label: "Manager", type: "select", options: managerOptions },
-        { name: "start_date", label: "Start date", type: "date" },
-        { name: "end_date", label: "End date", type: "date" },
-        { name: "description", label: "Description", type: "textarea" },
+        { name: "status", label: "Status", type: "select", options: statusOptions, required: true },
+        { name: "manager_id", label: "Manager", type: "select", options: managerOptions, requiredOnCreate: true, sendNullOnEmpty: true },
+        { name: "start_date", label: "Start date", type: "date", required: true, validators: ["minDateToday", "maxDateOneYear"] },
+        { name: "end_date", label: "End date", type: "date", required: true, minDateField: "start_date", minDateLabel: "start date", validators: ["minDateField", "maxDateOneYear"] },
+        { name: "description", label: "Description", type: "textarea", required: true, minLength: 100, validators: [{ name: "minLength", minLength: 100 }] },
       ]}
     />
   );
 }
 
 const statusOptions = [
+  { value: "on-hold", label: "On Hold" },
   { value: "active", label: "Active" },
-  { value: "on-hold", label: "On hold" },
   { value: "completed", label: "Completed" },
 ];
 

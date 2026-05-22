@@ -57,9 +57,9 @@ export default function Users() {
         { key: "is_active", label: "Status", render: (row) => <StatusBadge value={row.is_active ? "active" : "inactive"} /> },
       ]}
       fields={[
-        { name: "full_name", label: "Full name", required: true },
+        { name: "full_name", label: "Full name", required: true, validators: ["alphaSpace"] },
         { name: "username", label: "Username", required: true },
-        { name: "email", label: "Email", type: "email", required: true },
+        { name: "email", label: "Email", type: "email", required: true, validators: ["enterpriseEmail"] },
         { name: "password", label: "Password", type: "password" },
         { name: "role_id", label: "Role", type: "select", options: roleOptions, required: true },
         { name: "manager_id", label: "Manager", type: "select", options: managerOptions },

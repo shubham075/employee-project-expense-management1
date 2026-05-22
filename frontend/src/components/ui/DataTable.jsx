@@ -30,12 +30,12 @@ export default function DataTable({ columns, rows, onEdit, onDelete, empty = "No
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-2">
                         {onEdit && (
-                          <Button variant="ghost" className="h-9 w-9 p-0" onClick={() => onEdit(row)} title="Edit">
+                          <Button variant="action" className="h-9 w-9 p-0" onClick={() => onEdit(row)} title="Edit">
                             <Edit size={16} />
                           </Button>
                         )}
                         {onDelete && (
-                          <Button variant="ghost" className="h-9 w-9 p-0 text-red-600" onClick={() => onDelete(row)} title="Delete">
+                          <Button variant="danger" className="h-9 w-9 p-0" onClick={() => onDelete(row)} title="Delete">
                             <Trash2 size={16} />
                           </Button>
                         )}

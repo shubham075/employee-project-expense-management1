@@ -14,8 +14,8 @@ export default function Roles() {
         { key: "description", label: "Description" },
       ]}
       fields={[
-        { name: "name", label: "Name", required: true },
-        { name: "description", label: "Description", type: "textarea" },
+        { name: "name", label: "Name", required: true, validators: ["alphaOnly"] },
+        { name: "description", label: "Description", type: "textarea", maxLength: 100, validators: [{ name: "maxLength", maxLength: 100 }] },
       ]}
     />
   );
